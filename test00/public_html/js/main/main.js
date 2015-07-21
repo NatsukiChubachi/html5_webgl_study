@@ -64,16 +64,8 @@ onload = function()
     var position_vbo = create_vbo( vertex_position );
     var color_vbo = create_vbo( vertex_color );
 
-    // VBOをバインド（位置情報）
-    gl.bindBuffer( gl.ARRAY_BUFFER, position_vbo );
-    gl.enableVertexAttribArray( attLocation[ 0 ] );
-    gl.vertexAttribPointer( attLocation[ 0 ], attStride[ 0 ], gl.FLOAT, false, 0, 0);
-
-    // VBOをバインド（色情報）
-    gl.bindBuffer( gl.ARRAY_BUFFER, color_vbo );
-    gl.enableVertexAttribArray( attLocation[ 1 ] );
-    gl.vertexAttribPointer( attLocation[ 1 ], attStride[ 1 ], gl.FLOAT, false, 0, 0);
-    
+   // VBOをバインドする
+   set_attribute( [position_vbo, color_vbo], attLocation, attStride );
 
     // minMatrix.js を用いた行列関連処理
     // matIVオブジェクトを生成
@@ -83,27 +75,38 @@ onload = function()
     var mMatrix = m.identity( m.create() );
     var vMatrix = m.identity( m.create() );
     var pMatrix = m.identity( m.create() );
+    var tmpMatrix = m.identity( m.create() );
     var mvpMatrix = m.identity( m.create() );
 
     // ビュー座標変換行列
-    m.lookAt( [0.0, 1.0, 3.0], [0, 0, 0], [0, 1, 0], vMatrix );
-
-    // プロジェクション座標変換行列
+    m.lookAt( [0.0, 0.0, 3.0], [0, 0, 0], [0, 1, 0], vMatrix );
     m.perspective( 90, c.width / c.height, 0.1, 100, pMatrix );
 
     // 各行列を掛け合わせ座標変換行列を完成させる
     m.multiply( pMatrix, vMatrix, mvpMatrix );
     m.multiply( mvpMatrix, mMatrix, mvpMatrix );
-
+    m.multiply( pMatrix, vMatrix, tmpMatrix );
+    
     // uniformLocationの取得
     var uniLocation = gl.getUniformLocation( prg, 'mvpMatrix' );
 
+    // 一つ目のモデル描画
+    m.translate( mMatrix, [1.5, 0.0, 0.0], mMatrix );
+    m.multiply( tmpMatrix, mMatrix, mvpMatrix );
+
     // uniformLocationへ座標変換行列を登録
     gl.uniformMatrix4fv( uniLocation, false, mvpMatrix );
-
     // モデルの描画
     gl.drawArrays( gl.TRIANGLES, 0, 3 );
 
+    // 二つ目のモデル描画
+    m.identity( mMatrix );
+    m.translate( mMatrix, [-1.5, 0.0, 0.0], mMatrix );
+    m.multiply( tmpMatrix, mMatrix, mvpMatrix );
+    
+    gl.uniformMatrix4fv( uniLocation, false, mvpMatrix );
+    gl.drawArrays( gl.TRIANGLES, 0, 3 );
+    
     // コンテキストの再描画
     gl.flush();
 
@@ -201,6 +204,23 @@ onload = function()
 
         // 生成した VBO を返して終了
         return vbo;
+    }
+
+    // VBOをバインドし登録する関数
+    function set_attribute( vbo, attL, attS )
+    {
+        // 引数として受け取った配列を処理する
+        for( var i in vbo )
+        {
+            // バッファをバインドする
+            gl.bindBuffer( gl.ARRAY_BUFFER, vbo[ i ] );
+            
+            // attributeLocationを有効にする
+            gl.enableVertexAttribArray( attL[ i ] );
+            
+            // attributeLocationを通知し登録する
+            gl.vertexAttribPointer( attL[ i ], attS[ i ], gl.FLOAT, false, 0, 0 );
+        }
     }
 
 };
