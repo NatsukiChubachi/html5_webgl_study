@@ -7,8 +7,8 @@
 // wgld.org
 // http://wgld.org/
 
-// モデルを移動、回転、拡大縮小しながらレンダリングするサンプル
-// http://wgld.org/d/webgl/w017.html
+// インデックスバッファによる描画
+// カリングと深度テスト
 
 onload = function()
 {
@@ -20,7 +20,16 @@ onload = function()
     // webglコンテキストを取得
     var gl = c.getContext( 'webgl' ) || c.getContext( 'experimental-webgl' );
 
-
+    // カリングを有効にする
+    // gl.enable( gl.CULL_FACE );
+    // gl.frontFace( gl.CW );
+    
+    // 深度テストを有効にする
+    gl.enable( gl.DEPTH_TEST );
+    
+    // 深度テストの評価方法指定
+    gl.depthFunc( gl.LEQUAL );
+    
     // 頂点シェーダとフラグメントシェーダの生成
     var v_shader = create_shader( 'vs' );
     var f_shader = create_shader( 'fs' );
@@ -60,14 +69,22 @@ onload = function()
     var vertex_position = [
         0.0,  1.0, 0.0,
         1.0,  0.0, 0.0,
-        -1.0, 0.0, 0.0
+        -1.0, 0.0, 0.0,
+        0.0, -1.0, 0.0
     ];
 
     var vertex_color = [
         1.0, 0.0, 0.0, 1.0,
         0.0, 1.0, 0.0, 1.0,
-        0.0, 0.0, 1.0, 1.0
+        0.0, 0.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0
     ];
+    
+    // 頂点インデックスを格納する配列
+    var index = [
+        0, 1, 2,
+        1, 2, 3
+    ]
 
     // VBOの生成
     var position_vbo = create_vbo( vertex_position );
@@ -76,6 +93,11 @@ onload = function()
     // VBOをバインドする
     set_attribute( [position_vbo, color_vbo], attLocation, attStride );
 
+    // IBOの生成
+    var ibo = create_ibo( index );
+    
+    gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, ibo );
+    
     // 各行列を掛け合わせ座標変換行列を完成させる
     m.multiply( pMatrix, vMatrix, mvpMatrix );
     m.multiply( mvpMatrix, mMatrix, mvpMatrix );
@@ -97,27 +119,38 @@ onload = function()
         // カウンタをインクリメントする
         count++;
         var rad = (count % 360) * Math.PI / 180;
+        var x = Math.cos( rad ) * 1.5;
+        var z = Math.sin( rad ) * 1.5;
         
-
+        /*
         // 一つ目のモデル描画（円の奇跡を描き移動）
-        var x = Math.cos( rad );
-        var y = Math.sin( rad );
         m.identity( mMatrix );
         m.translate( mMatrix, [x, y+1.0, 0.0], mMatrix );
         m.multiply( tmpMatrix, mMatrix, mvpMatrix );
         
         gl.uniformMatrix4fv( uniLocation, false, mvpMatrix );   // uniformLocationへ座標変換行列を登録
         gl.drawArrays( gl.TRIANGLES, 0, 3 );                    // モデルの描画
-
-        // 二つ目のモデル描画（Y軸を中心に回転）
+        */
+       
+        // 一つ目のモデル描画
         m.identity( mMatrix );
-        m.translate( mMatrix, [1.0, -1.0, 0.0], mMatrix );
+        m.translate( mMatrix, [x, 0.0, z], mMatrix );
+        m.rotate( mMatrix, rad, [1, 0, 0], mMatrix );
+        m.multiply( tmpMatrix, mMatrix, mvpMatrix );
+
+        gl.uniformMatrix4fv( uniLocation, false, mvpMatrix );
+        gl.drawElements( gl.TRIANGLES, index.length, gl.UNSIGNED_SHORT, 0 );
+
+        // 二つ目のモデル描画
+        m.identity( mMatrix );
+        m.translate( mMatrix, [-x, 0.0, -z], mMatrix );
         m.rotate( mMatrix, rad, [0, 1, 0], mMatrix );
         m.multiply( tmpMatrix, mMatrix, mvpMatrix );
 
         gl.uniformMatrix4fv( uniLocation, false, mvpMatrix );
-        gl.drawArrays( gl.TRIANGLES, 0, 3 );
+        gl.drawElements( gl.TRIANGLES, index.length, gl.UNSIGNED_SHORT, 0 );
 
+        /*
         // 三つ目のモデル描画（拡大縮小）
         var s = Math.sin( rad ) + 1.0;
         m.identity( mMatrix );
@@ -127,7 +160,8 @@ onload = function()
 
         gl.uniformMatrix4fv( uniLocation, false, mvpMatrix );
         gl.drawArrays( gl.TRIANGLES, 0, 3 );
-
+        */
+       
         // コンテキストの再描画
         gl.flush();
         
@@ -246,6 +280,25 @@ onload = function()
             // attributeLocationを通知し登録する
             gl.vertexAttribPointer( attL[ i ], attS[ i ], gl.FLOAT, false, 0, 0 );
         }
+    }
+    
+    // IBOを生成する関数
+    function create_ibo( data )
+    {
+        // バッファオブジェクトの生成
+        var ibo = gl.createBuffer();
+        
+        // バッファをバインドする
+        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, ibo );
+        
+        // バッファにデータをセット
+        gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, new Int16Array( data ), gl.STATIC_DRAW );
+        
+        // バッファのバインドを向こうか
+        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, null );
+        
+        // 生成したIBOを返して終了
+        return ibo;
     }
 
     _render();
