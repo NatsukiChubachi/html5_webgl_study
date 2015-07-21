@@ -7,8 +7,9 @@
 // wgld.org
 // http://wgld.org/
 
-// インデックスバッファによる描画
-// カリングと深度テスト
+// トーラスの生成と描画
+// 平行光源
+// http://wgld.org/d/webgl/w021.html
 
 onload = function()
 {
