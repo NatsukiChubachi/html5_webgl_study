@@ -48,6 +48,9 @@ onload = function()
     // 平行光源の向き
     var lightDirection = [ -0.5, 0.5, 0.5 ];
     
+    // 環境光の色
+    var ambientColor = [0.1, 0.1, 0.1, 1.0];
+    
     // カウンタの宣言
     var count = 0;
     
@@ -124,6 +127,7 @@ onload = function()
     uniLocation[ 0 ] = gl.getUniformLocation( prg, 'mvpMatrix' );
     uniLocation[ 1 ] = gl.getUniformLocation( prg, 'invMatrix' );
     uniLocation[ 2 ] = gl.getUniformLocation( prg, 'lightDirection' );
+    uniLocation[ 3 ] = gl.getUniformLocation( prg, 'ambientColor' );
 
     var _render = function()
     {
@@ -163,6 +167,7 @@ onload = function()
         gl.uniformMatrix4fv( uniLocation[0], false, mvpMatrix );
         gl.uniformMatrix4fv( uniLocation[1], false, invMatrix );
         gl.uniform3fv( uniLocation[2], lightDirection );
+        gl.uniform4fv( uniLocation[3], ambientColor );
         gl.drawElements( gl.TRIANGLES, index.length, gl.UNSIGNED_SHORT, 0 );
 
         /*
