@@ -8,6 +8,7 @@
 // sample_020
 //
 // WebGLでマウスとクォータニオンによる回転処理
+// http://wgld.org/d/webgl/w033.html
 
 // canvas とクォータニオンをグローバルに扱う
 var c;
