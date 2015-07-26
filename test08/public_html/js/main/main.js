@@ -11,7 +11,10 @@
 // http://wgld.org/d/webgl/w026.html
 // マルチテクスチャ
 // http://wgld.org/d/webgl/w027.html
-
+// テクスチャパラメータ
+// http://wgld.org/d/webgl/w028.html
+// アルファブレンディング
+// http://wgld.org/d/webgl/w029.html
 onload = function()
 {
     // canvasエレメントを取得
@@ -71,6 +74,9 @@ onload = function()
     // gl.enable( gl.CULL_FACE );
     // gl.frontFace( gl.CW );
     
+    // ブレンディングを有効にするコード
+    gl.enable( gl.BLEND );
+    
     // 有効にするテクスチャユニットを指定
     gl.activeTexture( gl.TEXTURE0 );
     gl.activeTexture( gl.TEXTURE1 );
@@ -104,7 +110,7 @@ onload = function()
     ];
 
     var vertex_color = [
-        1.0, 1.0, 1.0, 1.0,
+        1.0, 0.0, 0.0, 1.0,
         1.0, 1.0, 1.0, 1.0,
         1.0, 1.0, 1.0, 1.0,
         1.0, 1.0, 1.0, 1.0
@@ -163,6 +169,8 @@ onload = function()
     uniLocation[ 0 ] = gl.getUniformLocation( prg, 'mvpMatrix' );
     uniLocation[ 1 ] = gl.getUniformLocation( prg, 'texture0' );
     uniLocation[ 2 ] = gl.getUniformLocation( prg, 'texture1' );
+    uniLocation[ 3 ] = gl.getUniformLocation( prg, 'vertexAlpha' );
+    uniLocation[ 4 ] = gl.getUniformLocation( prg, 'useTexture' );
 
     var _render = function()
     {
@@ -191,44 +199,53 @@ onload = function()
         gl.uniform1i( uniLocation[2], 1 );
         
         /*
-        // 一つ目のモデル描画（円の奇跡を描き移動）
-        m.identity( mMatrix );
-        m.translate( mMatrix, [x, y+1.0, 0.0], mMatrix );
-        m.multiply( tmpMatrix, mMatrix, mvpMatrix );
-        
-        gl.uniformMatrix4fv( uniLocation, false, mvpMatrix );   // uniformLocationへ座標変換行列を登録
-        gl.drawArrays( gl.TRIANGLES, 0, 3 );                    // モデルの描画
+        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST );
+        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
         */
-       
+        /*
+        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR );
+        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR );
+        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT );
+        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT );
+        */
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+		
+        // ブレンドパラメータ
+        gl.disable( gl.BLEND );
+        // gl.blendFunc( gl.ONE, gl.ZERO );
+        
         // 一つ目のモデル描画
         m.identity( mMatrix );
         m.translate( mMatrix, [x, y, 0.0], mMatrix );
-        m.rotate( mMatrix, rad, [0, 1, 0], mMatrix );
+        m.rotate( mMatrix, rad, [0, 0, 0], mMatrix );
         m.multiply( tmpMatrix, mMatrix, mvpMatrix );
         
         m.inverse( mMatrix, invMatrix );
 
         gl.uniformMatrix4fv( uniLocation[0], false, mvpMatrix );
-        /*
-        gl.uniformMatrix4fv( uniLocation[1], false, mMatrix );
-        gl.uniformMatrix4fv( uniLocation[2], false, invMatrix );
-        gl.uniform3fv( uniLocation[3], lightPosition );
-        gl.uniform3fv( uniLocation[4], eyeDirection );
-        gl.uniform4fv( uniLocation[5], ambientColor );
-        */
+        gl.uniform1f( uniLocation[3], 1.0 );
+        gl.uniform1i( uniLocation[4], true );
         gl.drawElements( gl.TRIANGLES, index.length, gl.UNSIGNED_SHORT, 0 );
 
-        /*
         // 二つ目のモデル描画
+        gl.enable( gl.BLEND );
+        gl.bindTexture( gl.TEXTURE_2D, null );
+        // gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );            // 透過処理
+        gl.blendFunc( gl.SRC_ALPHA, gl.ONE );                               // 加算合成
+        
         m.identity( mMatrix );
-        m.translate( mMatrix, [-x, 0.0, -z], mMatrix );
-        m.rotate( mMatrix, rad, [0, 1, 0], mMatrix );
+        m.translate( mMatrix, [0.0, 0.0, 0.0], mMatrix );
+        m.rotate( mMatrix, rad, [0, 0, 1], mMatrix );
         m.multiply( tmpMatrix, mMatrix, mvpMatrix );
+        
+        m.inverse( mMatrix, invMatrix );
 
-        gl.uniformMatrix4fv( uniLocation, false, mvpMatrix );
+        gl.uniformMatrix4fv( uniLocation[0], false, mvpMatrix );
+        gl.uniform1f( uniLocation[3], 0.75 );
+        gl.uniform1i( uniLocation[4], false );
         gl.drawElements( gl.TRIANGLES, index.length, gl.UNSIGNED_SHORT, 0 );
-        */
-       
+        
         /*
         // 三つ目のモデル描画（拡大縮小）
         var s = Math.sin( rad ) + 1.0;
