@@ -234,6 +234,9 @@ onload = function()
         // gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );            // 透過処理
         gl.blendFunc( gl.SRC_ALPHA, gl.ONE );                               // 加算合成
         
+        gl.blendEquation( gl.FUNC_ADD, gl.FUNC_ADD );
+        gl.blendFuncSeparate( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE );
+        
         m.identity( mMatrix );
         m.translate( mMatrix, [0.0, 0.0, 0.0], mMatrix );
         m.rotate( mMatrix, rad, [0, 0, 1], mMatrix );
