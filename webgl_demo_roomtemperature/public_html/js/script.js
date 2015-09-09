@@ -1,23 +1,12 @@
 // sample_024
 //
 // WebGLでポイントスプライト
-/*
-#if 1
-	DWORD dTime = GetTickCount();
-#endif
 
 
-#if 1
-	DWORD dc = GetTickCount() - dTime;
+// =========================================================
+// シェーダー部分
+// =========================================================
 
-	CString strMsg;
-	strMsg.Format( _T("%d"), dc );
-
-	AfxMessageBox( strMsg );
-#endif
-
-
-*/
 
 var _gshader = [];
 
@@ -90,10 +79,15 @@ _gshader[ "PointSprite" ] = {
 };
 
 
+// =========================================================
+// メイン処理部分
+// =========================================================
+
 // canvas とクォータニオンをグローバルに扱う
 var c;
 var q = new qtnIV();
 var qt = q.identity(q.create());
+
 
 // マウスムーブイベントに登録する処理
 function mouseMove(e)
@@ -113,12 +107,14 @@ function mouseMove(e)
 	q.rotate(r, [y, x, 0.0], qt);
 }
 
+
+
 onload = function()
 {
 	// canvasエレメントを取得
 	c = document.getElementById('canvas');
-	c.width = 500;
-	c.height = 300;
+	c.width = 1000;
+	c.height = 600;
 	
 	// エレメントへの参照を取得
 	var eLines     = document.getElementById('lines');
@@ -126,8 +122,10 @@ onload = function()
 	var eLineLoop  = document.getElementById('line_loop');
 	var ePointSize = document.getElementById('point_size');
 	
+
 	// イベント処理
 	c.addEventListener('mousemove', mouseMove, true);
+
 	
 	// webglコンテキストを取得
 	var gl = c.getContext('webgl') || c.getContext('experimental-webgl');
@@ -145,148 +143,11 @@ onload = function()
 	var prgPointSprite = _gshader[ "PointSprite" ].program;
 	
 	var obj = new testObject( prgNormalTexture );
-	var obj2 = new testObjectXX( prgPointSprite );
+	var obj2 = new testObjectXX00( prgNormalTexture );
 	
 	
 	
-	/*
-	var v_shaderX  = createVertexShader( _gshader[ "NormalTexture" ].vertex );
-	var f_shaderX  = createFragmentShader( _gshader[ "NormalTexture" ].fragment );
-	var prgNmlTex = create_program( v_shaderX, f_shaderX );
-	*/
 	
-	
-	/*
-	// attributeLocationを配列に取得
-	var attLocationX = new Array();
-	attLocationX[0] = gl.getAttribLocation(prgNmlTex, 'position');
-	attLocationX[1] = gl.getAttribLocation(prgNmlTex, 'color');
-	attLocationX[2] = gl.getAttribLocation(prgNmlTex, 'textureCoord');
-	
-	// attributeの要素数を配列に格納
-	var attStrideX = new Array();
-	attStrideX[0] = 3;
-	attStrideX[1] = 4;
-	attStrideX[2] = 2;
-	
-	// 頂点の位置
-	var positionX = [
-		-5.0,  5.0,  0.0,
-		 5.0,  5.0,  0.0,
-		-5.0, -5.0,  0.0,
-		 5.0, -5.0,  0.0
-	];
-	
-	// 頂点色
-	var colorX = [
-		1.0, 1.0, 1.0, 1.0,
-		1.0, 1.0, 1.0, 1.0,
-		1.0, 1.0, 1.0, 1.0,
-		1.0, 1.0, 1.0, 1.0
-	];
-	
-	// テクスチャ座標
-	var textureCoordX = [
-		0.0, 0.0,
-		1.0, 0.0,
-		0.0, 1.0,
-		1.0, 1.0
-	];
-	
-	// 頂点インデックス
-	var indexX = [
-		0, 1, 2,
-		3, 2, 1
-	];	
-	
-	// VBOとIBOの生成
-	var vPositionX     = create_vbo(positionX);
-	var vColorX        = create_vbo(colorX);
-	var vTextureCoordX = create_vbo(textureCoordX);
-	var VBOListX       = [vPositionX, vColorX, vTextureCoordX];
-	var iIndexX        = create_ibo(indexX);
-	
-	// VBOとIBOの登録
-	set_attribute(VBOListX, attLocationX, attStrideX);
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, iIndexX);
-	
-	// uniformLocationを配列に取得
-	var uniLocationX = new Array();
-	uniLocationX[0]  = gl.getUniformLocation(prgNmlTex, 'mvpMatrix');
-	uniLocationX[1]  = gl.getUniformLocation(prgNmlTex, 'texture');
-	*/
-	
-	
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	/*
-	
-	// 頂点シェーダとフラグメントシェーダの生成
-	// プログラムオブジェクトの生成とリンク
-	var v_shader = createVertexShader( _gshader[ "PointSprite" ].vertex );
-	var f_shader = createFragmentShader( _gshader[ "PointSprite" ].fragment );
-	var prgPointShader = create_program( v_shader, f_shader );
-	
-	// attributeLocationを配列に取得
-	var attLocation = new Array();
-	attLocation[0] = gl.getAttribLocation( prgPointShader, 'position' );
-	attLocation[1] = gl.getAttribLocation( prgPointShader, 'color' );
-	
-	// attributeの要素数を配列に格納
-	var attStride = new Array();
-	attStride[ 0 ] = 3;
-	attStride[ 1 ] = 4;
-	
-	// 点のVBO生成
-	var pointSphere = sphere( 16, 16, 2.0 );
-	var pPos = create_vbo( pointSphere.p );
-	var pCol = create_vbo( pointSphere.c );
-	var pVBOList = [ pPos, pCol ];
-	
-	// 線の頂点位置
-	var position = [
-		-1.0, -1.0,  0.0,
-		 1.0, -1.0,  0.0,
-		-1.0,  1.0,  0.0,
-		 1.0,  1.0,  0.0
-	];
-	
-	// 線の頂点色
-	var color = [
-		 1.0, 1.0, 1.0, 1.0,
-		 1.0, 0.0, 0.0, 1.0,
-		 0.0, 1.0, 0.0, 1.0,
-		 0.0, 0.0, 1.0, 1.0
-	];
-	
-	// 線のVBO生成
-	var lPos = create_vbo(position);
-	var lCol = create_vbo(color);
-	var lVBOList = [lPos, lCol];
-	
-	// uniformLocationを配列に取得
-	var uniLocation = new Array();
-	uniLocation[0]  = gl.getUniformLocation(prgPointShader, 'mvpMatrix');
-	uniLocation[1]  = gl.getUniformLocation(prgPointShader, 'pointSize');
-	uniLocation[2]  = gl.getUniformLocation(prgPointShader, 'texture');
-	uniLocation[3]  = gl.getUniformLocation(prgPointShader, 'useTexture');
-	
-	*/
 	
 	
 	
@@ -299,24 +160,43 @@ onload = function()
 	var mvpMatrix = m.identity( m.create() );
 	var qMatrix   = m.identity( m.create() );
 	
+	
+	
 	// 各種フラグを有効化する
 	gl.enable( gl.DEPTH_TEST );
 	gl.depthFunc( gl.LEQUAL );
 	gl.enable( gl.BLEND );
 	
+	
+	
 	// ブレンドファクター
 	gl.blendFuncSeparate( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE );
+	
+	
 	
 	// カウンタ
 	var count = 0;
 	
 	// テクスチャ関連
+/*
 	var _gTexture = [];
 	create_texture( 0, 'data/texture.png' );
 	create_texture( 1, 'data/test_office.jpg' );
+*/
 	
 	obj.loadTexture( 0, 'data/test_office.jpg' );
-	obj2.loadTexture( 0, 'data/texture.png' );
+	// obj2.textureManager.loadTexture( 0, 'data/texture.png' );
+	obj2.textureManager.loadTexture( 0, 'data/test_office.jpg' );
+	
+	
+	
+	
+	var t = 0.0;
+	
+	
+	
+	
+	
 	
 	
 	var rad = 0.0 * Math.PI / 180.0;
@@ -325,19 +205,23 @@ onload = function()
 	(function()
 	{
 		// canvasを初期化
-		gl.clearColor(0.0, 0.0, 0.0, 1.0);
-		gl.clearDepth(1.0);
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		gl.clearColor( 0.0, 0.0, 0.0, 1.0 );
+		gl.clearDepth( 1.0 );
+		gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 		
 		// カウンタからラジアンを算出
 		count++;
+/*
 		count = count % 1;
 		
 		if ( count === 0 )
 		{
 		    var temperature = Math.random() * 10.0;
 		    
+		    // テスト
 		    // VBOインデックスを動的に増やしてみる
+		    // 動的に天井方を増やせるかどうか？
+		    // この場合はdrawArraysのほうがいいのかもしれない
 		    for( var i=0; i<3; i+=1)
 		    {
 			    count = obj2.position.length;
@@ -367,31 +251,97 @@ onload = function()
 			
 			count = 0;
 		}
-		
-		rad = (0.0 % 360) * Math.PI / 180;
+*/
+		count = -80;
+		rad = (count % 360) * Math.PI / 180;
 		
 		// クォータニオンを行列に適用
-		var qMatrix = m.identity(m.create());
-		q.toMatIV(qt, qMatrix);
+		var qMatrix = m.identity( m.create() );
+		q.toMatIV( qt, qMatrix );
 		
 		// ビュー×プロジェクション座標変換行列
-		var camPosition = [0.0, 5.0, 10.0];
-		m.lookAt(camPosition, [0, 0, 0], [0, 1, 0], vMatrix);
-		m.multiply(vMatrix, qMatrix, vMatrix);
-		m.perspective(45, c.width / c.height, 0.1, 100, pMatrix);
-		m.multiply(pMatrix, vMatrix, tmpMatrix);
+		var camPosition = [ 0.0, 5.0, 10.0 ];
+		m.lookAt( camPosition, [0, 0, 0], [ 0, 1, 0 ], vMatrix );
+		m.multiply( vMatrix, qMatrix, vMatrix );
+		m.perspective( 45, c.width / c.height, 0.1, 100, pMatrix );
+		m.multiply( pMatrix, vMatrix, tmpMatrix );
+		
+
+		
+		t++;
+		if ( t > 300 ) t = -300;
+		
+		for ( var i=0; i<100; i++ )
+		{
+			for ( var j=0; j<100; j++ )
+			{
+				var idx = j + (i * 100);
+				
+				var iVal = Math.abs( (obj2.moveVal[ idx ] / 10000.0) * t / 300.0 );
+				if ( Math.abs( t ) < 25 ) iVal = 0;
+				
+				var iRed = (iVal - 0.3) / 1.0;
+				if ( iRed < 0.0 ) iRed = 0.0;
+				
+				var iBlue = (-iVal + 0.3) / 0.3;
+				if ( iBlue < 0.0 ) iBlue = 0.0;
+				
+				obj2.position[ (idx*12)+0 ] = -5.0 + (i * 0.1);
+				obj2.position[ (idx*12)+1 ] = 5.0 - (j * 0.1);
+				obj2.position[ (idx*12)+2 ] = 0.0 + (iVal / 2.0);
+				obj2.position[ (idx*12)+3 ] = -5.0 + ((i+1) * 0.1);
+				obj2.position[ (idx*12)+4 ] = 5.0 - (j * 0.1);
+				obj2.position[ (idx*12)+5 ] = 0.0 + (iVal / 2.0);
+				obj2.position[ (idx*12)+6 ] = -5.0 + (i * 0.1);
+				obj2.position[ (idx*12)+7 ] = 5.0 - ((j+1) * 0.1);
+				obj2.position[ (idx*12)+8 ] = 0.0 + (iVal / 2.0);
+				obj2.position[ (idx*12)+9 ] = -5.0 + ((i+1) * 0.1);
+				obj2.position[ (idx*12)+10 ] = 5.0 - ((j+1) * 0.1);
+				obj2.position[ (idx*12)+11 ] = 0.0 + (iVal / 1.0);
+				
+				obj2.color[ (idx*16)+0 ] = 0.0 + iVal;
+				obj2.color[ (idx*16)+1 ] = 1.0 - iVal;
+				obj2.color[ (idx*16)+2 ] = 1.0 - iVal;
+				obj2.color[ (idx*16)+3 ] = 1.0;
+				
+				obj2.color[ (idx*16)+4 ] = 0.0 + iVal;
+				obj2.color[ (idx*16)+5 ] = 1.0 - iVal;
+				obj2.color[ (idx*16)+6 ] = 1.0 - iVal;
+				obj2.color[ (idx*16)+7 ] = 1.0;
+				
+				obj2.color[ (idx*16)+8 ] = 0.0 + iVal;
+				obj2.color[ (idx*16)+9 ] = 1.0 - iVal;
+				obj2.color[ (idx*16)+10 ] = 1.0 - iVal;
+				obj2.color[ (idx*16)+11 ] = 1.0;
+				
+				obj2.color[ (idx*16)+12 ] = 0.0 + iVal;
+				obj2.color[ (idx*16)+13 ] = 1.0 - iVal;
+				obj2.color[ (idx*16)+14 ] = 1.0 - iVal;
+				obj2.color[ (idx*16)+15 ] = 1.0;
+			}
+		}
+				
+		obj2.vPosition     = create_vbo( obj2.position );
+		obj2.vColor        = create_vbo( obj2.color );
+		obj2.VBOList       = [ obj2.vPosition, obj2.vColor ];
+		obj2.iIndex        = create_ibo( obj2.index );
+
+
+		
+		// テストオブジェクトの描画
+		//obj.drawImplements();
+		obj2.drawImplements();
 		
 		
+		// コンテキストの再描画
+		gl.flush();
 		
-		/*
+		// ループのために再帰呼び出し
+		setTimeout( arguments.callee, 1000 / 60 );
 		
-		// 点のサイズをエレメントから取得
-		var pointSize = ePointSize.value / 10;
 		
-		// ポイントスプライトに設定するテクスチャをバインド
-		gl.activeTexture( gl.TEXTURE0 );
-		gl.bindTexture( gl.TEXTURE_2D, _gTexture[ 0 ] );
-		
+		// 予備コード
+/*
 		// 点を描画
 		set_attribute(pVBOList, attLocation, attStride);
 		m.identity(mMatrix);
@@ -402,13 +352,15 @@ onload = function()
 		gl.uniform1i(uniLocation[2], 0);
 		gl.uniform1i(uniLocation[3], true);
 		gl.drawArrays(gl.POINTS, 0, pointSphere.p.length / 3);
-		
+*/
+/*
 		// 線タイプを判別
 		var lineOption = 0;
 		if(eLines.checked){lineOption = gl.LINES;}
 		if(eLineStrip.checked){lineOption = gl.LINE_STRIP;}
 		if(eLineLoop.checked){lineOption = gl.LINE_LOOP;}
-		
+*/
+/*
 		// 線を描画
 		set_attribute(lVBOList, attLocation, attStride);
 		m.identity(mMatrix);
@@ -418,45 +370,15 @@ onload = function()
 		gl.uniformMatrix4fv(uniLocation[0], false, mvpMatrix);
 		gl.uniform1i(uniLocation[3], false);
 		gl.drawArrays(lineOption, 0, position.length / 3);
-		
-		*/
-		
-		
-		
-		/*
-		// テクスチャをバインドする
-		gl.activeTexture( gl.TEXTURE0 );
-		gl.bindTexture( gl.TEXTURE_2D, obj.texture[ 0 ] );
-		
-		// uniform変数にテクスチャを登録
-		gl.uniform1i( obj.uniLocation[ 1 ], 0 );
-		
-		// モデル座標変換行列の生成
-		m.identity( mMatrix );
-		m.rotate( mMatrix, rad, [0, 1, 0], mMatrix );
-		m.multiply( tmpMatrix, mMatrix, mvpMatrix );
-		
-		// uniform変数の登録と描画
-		gl.uniformMatrix4fv( obj.uniLocation[ 0 ], false, mvpMatrix );
-		gl.drawElements( gl.TRIANGLES, obj.index.length, gl.UNSIGNED_SHORT, 0 );
-		*/
-		
-		// テストオブジェクトの描画
-		obj.preDrawSet();
-		obj.setDrawParam1i( 1, 0 );
-		obj.drawImplements();
-		
-		obj2.drawImplements();
-		
-		
-		// コンテキストの再描画
-		gl.flush();
-		
-		// ループのために再帰呼び出し
-		setTimeout( arguments.callee, 1000 / 60 );
+*/
+
 	})();
 
 	
+	// =========================================================
+	// VBO、IBO、テクスチャ作成関連
+	// テクスチャは実際にはここでは使用しない
+	// =========================================================
 	/**
 	 * VBOを生成する関数
 	 */
@@ -518,8 +440,6 @@ onload = function()
 		return ibo;
 	}
 	
-
-
 	/**
 	 * テクスチャを生成する関数
 	 */
@@ -555,54 +475,6 @@ onload = function()
 	}
 
 	
-	// シェーダを生成する関数
-/*
-//	function create_shader( id )
-//	{
-//		// シェーダを格納する変数
-//		var shader;
-//		
-//		// HTMLからscriptタグへの参照を取得
-//		var scriptElement = document.getElementById( id );
-//		
-//		// scriptタグが存在しない場合は抜ける
-//		if(!scriptElement) { return; }
-//		
-//		// scriptタグのtype属性をチェック
-//		switch(scriptElement.type){
-//			
-//			// 頂点シェーダの場合
-//			case 'x-shader/x-vertex':
-//				shader = gl.createShader(gl.VERTEX_SHADER);
-//				break;
-//				
-//			// フラグメントシェーダの場合
-//			case 'x-shader/x-fragment':
-//				shader = gl.createShader(gl.FRAGMENT_SHADER);
-//				break;
-//			default :
-//				return;
-//		}
-//		
-//		// 生成されたシェーダにソースを割り当てる
-//		gl.shaderSource(shader, scriptElement.text);
-//		
-//		// シェーダをコンパイルする
-//		gl.compileShader(shader);
-//		
-//		// シェーダが正しくコンパイルされたかチェック
-//		if(gl.getShaderParameter(shader, gl.COMPILE_STATUS))
-//		{
-//			// 成功していたらシェーダを返して終了
-//			return shader;
-//		}
-//		else
-//		{
-//			// 失敗していたらエラーログをアラートする
-//			alert(gl.getShaderInfoLog(shader));
-//		}
-//	}
-*/
 	/**
 	 * VertexShaderを作成する
 	 */
@@ -654,7 +526,8 @@ onload = function()
 	}
 
 	/**
-	 * VertexShaderとFragmentShaderからプログラムオブジェクトを生成し、シェーダをリンクする関数
+	 * VertexShaderとFragmentShaderからプログラムオブジェクトを生成し、
+	 * シェーダをリンクする関数
 	 */
 	// プログラムオブジェクトを生成しシェーダをリンクする関数
 	function create_program( vs, fs )
@@ -685,12 +558,10 @@ onload = function()
 		}
 	}
 	
-
-
-
-
-
-
+	
+	// =========================================================
+	// 3Dモデル用オブジェクトクラスの試作型
+	// =========================================================
 	/**
 	 * テストオブジェクトの作成クラス
 	 */
@@ -764,27 +635,6 @@ onload = function()
 		/**
 		 * 描画
 		 */
-		// this.drawMode = gl.TRIANGLES;
-		
-		this.preDrawSet = function()
-		{
-			/*
-			// テクスチャをバインドする
-			gl.activeTexture( gl.TEXTURE0 );
-			gl.bindTexture( gl.TEXTURE_2D, this.texture[ 0 ] );
-			
-			// uniform変数にテクスチャを登録
-			gl.uniform1i( this.uniLocation[ 1 ], 0 );
-			*/
-		};
-		
-		this.setDrawParam1i = function( iNum, iParam )
-		{
-			/*
-			gl.uniform1i( this.uniLocation[ iNum ], iParam );
-			*/
-		};
-		
 		this.drawImplements = function()
 		{
 			// シェーダをリンク
@@ -803,7 +653,7 @@ onload = function()
 			
 			// モデル座標変換行列の生成
 			m.identity( mMatrix );
-			m.rotate( mMatrix, rad, [0, 1, 0], mMatrix );
+			m.rotate( mMatrix, rad, [1, 0, 0], mMatrix );
 			m.multiply( tmpMatrix, mMatrix, mvpMatrix );
 			
 			// uniform変数の登録と描画
@@ -928,27 +778,6 @@ onload = function()
 		/**
 		 * 描画
 		 */
-		// this.drawMode = gl.TRIANGLES;
-		
-		this.preDrawSet = function()
-		{
-			/*
-			// テクスチャをバインドする
-			gl.activeTexture( gl.TEXTURE0 );
-			gl.bindTexture( gl.TEXTURE_2D, this.texture[ 0 ] );
-			
-			// uniform変数にテクスチャを登録
-			gl.uniform1i( this.uniLocation[ 1 ], 0 );
-			*/
-		};
-		
-		this.setDrawParam1i = function( iNum, iParam )
-		{
-			/*
-			gl.uniform1i( this.uniLocation[ iNum ], iParam );
-			*/
-		};
-		
 		this.drawImplements = function()
 		{
 			// シェーダをリンク
@@ -964,7 +793,7 @@ onload = function()
 			
 			// モデル座標変換行列の生成
 			m.identity( mMatrix );
-			m.rotate( mMatrix, rad, [0, 1, 0], mMatrix );
+			m.rotate( mMatrix, rad, [1, 0, 0], mMatrix );
 			m.multiply( tmpMatrix, mMatrix, mvpMatrix );
 
 			// uniform変数の登録と描画
@@ -1017,6 +846,255 @@ onload = function()
 		return this;
 	};
 
+
+
+
+
+	/**
+	 * テストデータ構造体
+	 * テクスチャマネージャー
+	 */
+	function testTextureManager()
+	{
+		// テクスチャ
+		this.texture = [];
+		
+		/**
+		 * テクスチャを生成する関数
+		 */
+		this.loadTexture = function ( num, source )
+		{
+		    // オブジェクトを取得
+		    var obj = this;
+		    
+			// イメージオブジェクトの生成
+			var img = new Image();
+			
+			// データのオンロードをトリガーにする
+			img.onload = function()
+			{
+				// テクスチャオブジェクトの生成
+				var tex = gl.createTexture();
+				
+				// テクスチャをバインドする
+				gl.bindTexture( gl.TEXTURE_2D, tex );
+				
+				// テクスチャへイメージを適用
+				gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img );
+				
+				// ミップマップを生成
+				gl.generateMipmap( gl.TEXTURE_2D );
+				
+				// テクスチャのバインドを無効化
+				gl.bindTexture( gl.TEXTURE_2D, null );
+				
+				// 生成したテクスチャを変数に代入
+				obj.texture[ num ] = tex;
+			};
+			
+			// イメージオブジェクトのソースを指定
+			img.src = source;
+		}
+		
+		/**
+		 * テクスチャを解放する関数
+		 */
+		this.releaseTexture = function( num )
+		{
+		};
+		
+		/**
+		 * テクスチャを全て解放する関数
+		 */
+		this.releaseAllTexture = function ()
+		{
+		};
+		
+		/**
+		 * テクスチャデータの取得
+		 */
+		this.getTexture = function( num )
+		{
+			return this.texture[ num ];
+		};
+		
+		return this;
+	}
+	
+	/**
+	 * モデルデータ
+	 */
+	function testObjectXX00( drawProgram )
+	{
+		// テクスチャマネージャ
+		this.textureManager = new testTextureManager();
+		
+		// シェーダー
+		this.drawShader = drawProgram;
+		
+		// attributeLocationを配列に取得
+		this.attLocation = new Array();
+		this.attLocation[0] = gl.getAttribLocation( this.drawShader, 'position' );
+		this.attLocation[1] = gl.getAttribLocation( this.drawShader, 'color' );
+		this.attLocation[2] = gl.getAttribLocation( this.drawShader, 'textureCoord' );
+		
+		// attributeの要素数を配列に格納
+		this.attStride = new Array();
+		this.attStride[0] = 3;
+		this.attStride[1] = 4;
+		this.attStride[2] = 2;
+		
+		// 頂点の位置
+		this.position = [
+			-10.0,  10.0,  0.0,
+			 10.0,  10.0,  0.0,
+			-10.0, -10.0,  0.0,
+			 10.0, -10.0,  0.0
+		];
+		
+		// 頂点色
+		this.color = [
+			1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0
+		];
+		
+		// テクスチャ座標
+		this.textureCoord = [
+			0.0, 0.0,
+			1.0, 0.0,
+			0.0, 1.0,
+			1.0, 1.0
+		];
+		
+		// 頂点インデックス
+		this.index = [
+			0, 1, 2,
+			3, 2, 1
+		];	
+		
+		this.moveVal = [];
+		
+		var iPreVal = 0.0;
+		
+		
+		for ( var i=0; i<100; i++ )
+		{
+			for ( var j=0; j<100; j++ )
+			{
+				var idx = j + (i * 100);
+				
+				
+				this.moveVal[ idx ] = 0.0;
+				if ( this.moveVal[ idx ] <= 0.0 )
+				{
+					this.moveVal[ idx ] = (1.0 - ((Math.abs(i-50)+Math.abs(j-50))/100.0 * 2.0) ) * 10000.0;
+				}
+				
+				if ( this.moveVal[ idx ] < 0.0 )
+				{
+					this.moveVal[ idx ] = -(1.0 - ((Math.abs(i-50)+Math.abs(j-50))/100.0 * 2.0) ) * 10000.0;
+				}
+				
+				this.position[ (idx*12)+0 ] = -5.0 + (i * 0.1);
+				this.position[ (idx*12)+1 ] = 5.0 - (j * 0.1);
+				this.position[ (idx*12)+2 ] = 0.0;
+				this.position[ (idx*12)+3 ] = -5.0 + ((i+1) * 0.1);
+				this.position[ (idx*12)+4 ] = 5.0 - (j * 0.1);
+				this.position[ (idx*12)+5 ] = 0.0;
+				this.position[ (idx*12)+6 ] = -5.0 + (i * 0.1);
+				this.position[ (idx*12)+7 ] = 5.0 - ((j+1) * 0.1);
+				this.position[ (idx*12)+8 ] = 0.0;
+				this.position[ (idx*12)+9 ] = -5.0 + ((i+1) * 0.1);
+				this.position[ (idx*12)+10 ] = 5.0 - ((j+1) * 0.1);
+				this.position[ (idx*12)+11 ] = 0.0;
+				
+				this.color[ (idx*16)+0 ] = 1.0;
+				this.color[ (idx*16)+1 ] = 1.0 - iPreVal;
+				this.color[ (idx*16)+2 ] = 1.0 - iPreVal;
+				this.color[ (idx*16)+3 ] = 1.0;
+				this.color[ (idx*16)+4 ] = 1.0;
+				this.color[ (idx*16)+5 ] = 1.0 - iPreVal;
+				this.color[ (idx*16)+6 ] = 1.0 - iPreVal;
+				this.color[ (idx*16)+7 ] = 1.0;
+				this.color[ (idx*16)+8 ] = 1.0;
+				this.color[ (idx*16)+9 ] = 1.0 - iPreVal;
+				this.color[ (idx*16)+10 ] = 1.0 - iPreVal;
+				this.color[ (idx*16)+11 ] = 1.0;
+				this.color[ (idx*16)+12 ] = 1.0;
+				this.color[ (idx*16)+13 ] = 1.0 - iPreVal;
+				this.color[ (idx*16)+14 ] = 1.0 - iPreVal;
+				this.color[ (idx*16)+15 ] = 1.0;
+				
+				this.textureCoord[ (idx*8)+0 ] = (i / 100);
+				this.textureCoord[ (idx*8)+1 ] = (j / 100);
+				this.textureCoord[ (idx*8)+2 ] = ((i+1) / 100);
+				this.textureCoord[ (idx*8)+3 ] = (j / 100);
+				this.textureCoord[ (idx*8)+4 ] = (i / 100);
+				this.textureCoord[ (idx*8)+5 ] = ((j+1) / 100);
+				this.textureCoord[ (idx*8)+6 ] = ((i+1) / 100);
+				this.textureCoord[ (idx*8)+7 ] = ((j+1) / 100);
+				
+				this.index[ (idx*6)+0 ] = (idx*4)+0;
+				this.index[ (idx*6)+1 ] = (idx*4)+1;
+				this.index[ (idx*6)+2 ] = (idx*4)+2;
+				this.index[ (idx*6)+3 ] = (idx*4)+3;
+				this.index[ (idx*6)+4 ] = (idx*4)+2;
+				this.index[ (idx*6)+5 ] = (idx*4)+1;
+			}
+		}
+		
+		
+		// VBOとIBOの生成
+		this.vPosition     = create_vbo( this.position );
+		this.vColor        = create_vbo( this.color );
+		this.vTextureCoord = create_vbo( this.textureCoord );
+		this.VBOList       = [ this.vPosition, this.vColor, this.vTextureCoord ];
+		this.iIndex        = create_ibo( this.index );
+		
+		// VBOとIBOの登録
+		set_attribute( this.VBOList, this.attLocation, this.attStride );
+		gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.iIndex );
+		
+		// uniformLocationを配列に取得
+		this.uniLocation = new Array();
+		this.uniLocation[ 0 ]  = gl.getUniformLocation( this.drawShader, 'mvpMatrix' );
+		this.uniLocation[ 1 ]  = gl.getUniformLocation( this.drawShader, 'texture' );
+		
+		/**
+		 * 描画
+		 */
+		this.drawImplements = function()
+		{
+			// シェーダをリンク
+			gl.useProgram( this.drawShader );
+			
+			// VBOとIBOの登録
+			set_attribute( this.VBOList, this.attLocation, this.attStride );
+			gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.iIndex );
+			
+			// テクスチャをバインドする
+			gl.activeTexture( gl.TEXTURE0 );
+			gl.bindTexture( gl.TEXTURE_2D, this.textureManager.getTexture( 0 ) );
+			
+			// uniform変数にテクスチャを登録
+			gl.uniform1i( this.uniLocation[ 1 ], 0 );
+			
+			// モデル座標変換行列の生成
+			m.identity( mMatrix );
+			m.rotate( mMatrix, rad, [1, 0, 0], mMatrix );
+			m.multiply( tmpMatrix, mMatrix, mvpMatrix );
+			
+			// uniform変数の登録と描画
+			gl.uniformMatrix4fv( this.uniLocation[ 0 ], false, mvpMatrix );
+			
+			gl.drawElements( gl.TRIANGLES, this.index.length, gl.UNSIGNED_SHORT, 0 );
+		};
+		
+		return this;
+	};
+	
 
 
 
