@@ -143,7 +143,9 @@ onload = function()
 	var prgPointSprite = _gshader[ "PointSprite" ].program;
 	
 	var obj = new testObject( prgNormalTexture );
+	var obj2XX = new testObjectXX( prgPointSprite );
 	var obj2 = new testObjectXX00( prgNormalTexture );
+	var obj3 = new testObjectXX00( prgNormalTexture );
 	
 	
 	
@@ -185,13 +187,15 @@ onload = function()
 */
 	
 	obj.loadTexture( 0, 'data/test_office.jpg' );
-	// obj2.textureManager.loadTexture( 0, 'data/texture.png' );
+	//obj2XX.textureManager.loadTexture( 0, 'data/texture.png' );
 	obj2.textureManager.loadTexture( 0, 'data/test_office.jpg' );
+	obj3.textureManager.loadTexture( 0, 'data/test_office.jpg' );
 	
 	
 	
 	
 	var t = 0.0;
+	var history = 0;
 	
 	
 	
@@ -269,15 +273,26 @@ onload = function()
 
 		
 		t++;
-		if ( t > 300 ) t = -300;
-		
-		for ( var i=0; i<100; i++ )
+		if ( t > 300 )
 		{
-			for ( var j=0; j<100; j++ )
+		 	t = -300;
+		}
+		
+		if ( t === 0 )
+		{
+		 	history++;
+		 	if ( history >= 3 ) history = 0; 
+		}
+		
+		
+		
+		for ( var i=0; i<50; i++ )
+		{
+			for ( var j=0; j<50; j++ )
 			{
-				var idx = j + (i * 100);
+				var idx = j + (i * 50);
 				
-				var iVal = Math.abs( (obj2.moveVal[ idx ] / 10000.0) * t / 300.0 );
+				var iVal = Math.abs( (obj2.moveVal[ ((50*50)*history) + idx ] / 10000.0) * t / 300.0 );
 				if ( Math.abs( t ) < 25 ) iVal = 0;
 				
 				var iRed = (iVal - 0.3) / 1.0;
@@ -286,18 +301,18 @@ onload = function()
 				var iBlue = (-iVal + 0.3) / 0.3;
 				if ( iBlue < 0.0 ) iBlue = 0.0;
 				
-				obj2.position[ (idx*12)+0 ] = -5.0 + (i * 0.1);
-				obj2.position[ (idx*12)+1 ] = 5.0 - (j * 0.1);
-				obj2.position[ (idx*12)+2 ] = 0.0 + (iVal / 2.0);
-				obj2.position[ (idx*12)+3 ] = -5.0 + ((i+1) * 0.1);
-				obj2.position[ (idx*12)+4 ] = 5.0 - (j * 0.1);
-				obj2.position[ (idx*12)+5 ] = 0.0 + (iVal / 2.0);
-				obj2.position[ (idx*12)+6 ] = -5.0 + (i * 0.1);
-				obj2.position[ (idx*12)+7 ] = 5.0 - ((j+1) * 0.1);
-				obj2.position[ (idx*12)+8 ] = 0.0 + (iVal / 2.0);
-				obj2.position[ (idx*12)+9 ] = -5.0 + ((i+1) * 0.1);
-				obj2.position[ (idx*12)+10 ] = 5.0 - ((j+1) * 0.1);
-				obj2.position[ (idx*12)+11 ] = 0.0 + (iVal / 1.0);
+				obj2.position[ (idx*12)+0 ] = -5.0 + (i * 0.2);
+				obj2.position[ (idx*12)+1 ] = 5.0 - (j * 0.2);
+				obj2.position[ (idx*12)+2 ] = 0.0 + (iVal / 4.0);
+				obj2.position[ (idx*12)+3 ] = -5.0 + ((i+1) * 0.2);
+				obj2.position[ (idx*12)+4 ] = 5.0 - (j * 0.2);
+				obj2.position[ (idx*12)+5 ] = 0.0 + (iVal / 4.0);
+				obj2.position[ (idx*12)+6 ] = -5.0 + (i * 0.2);
+				obj2.position[ (idx*12)+7 ] = 5.0 - ((j+1) * 0.2);
+				obj2.position[ (idx*12)+8 ] = 0.0 + (iVal / 4.0);
+				obj2.position[ (idx*12)+9 ] = -5.0 + ((i+1) * 0.2);
+				obj2.position[ (idx*12)+10 ] = 5.0 - ((j+1) * 0.2);
+				obj2.position[ (idx*12)+11 ] = 0.0 + (iVal / 4.0);
 				
 				obj2.color[ (idx*16)+0 ] = 0.0 + iVal;
 				obj2.color[ (idx*16)+1 ] = 1.0 - iVal;
@@ -331,6 +346,8 @@ onload = function()
 		// テストオブジェクトの描画
 		//obj.drawImplements();
 		obj2.drawImplements();
+		obj2XX.drawImplements();
+		obj3.drawImplements();
 		
 		
 		// コンテキストの再描画
@@ -730,10 +747,10 @@ onload = function()
 			 1.0,  1.0,  1.0,
 			-1.0, -1.0,  1.0,
 			 1.0, -1.0,  1.0,
-			-1.0,  1.0,  -1.0,
-			 1.0,  1.0,  -1.0,
-			-1.0, -1.0,  -1.0,
-			 1.0, -1.0,  -1.0
+			-2.0,  2.0,  1.0,
+			 2.0,  2.0,  1.0,
+			-2.0, -2.0,  1.0,
+			 2.0, -2.0,  1.0
 		];
 		
 		// 頂点色
@@ -742,10 +759,10 @@ onload = function()
 			1.0, 0.0, 0.0, 1.0,
 			0.0, 1.0, 0.0, 1.0,
 			0.0, 0.0, 1.0, 1.0,
-			1.0, 1.0, 1.0, 0.5,
-			1.0, 0.0, 0.0, 0.5,
-			0.0, 1.0, 0.0, 0.5,
-			0.0, 0.0, 1.0, 0.5
+			1.0, 1.0, 1.0, 1.0,
+			1.0, 0.0, 0.0, 1.0,
+			0.0, 1.0, 0.0, 1.0,
+			0.0, 0.0, 1.0, 1.0
 		];
 		
 		// 頂点インデックス
@@ -799,9 +816,9 @@ onload = function()
 			// uniform変数の登録と描画
 			gl.uniformMatrix4fv( this.uniLocation[ 0 ], false, mvpMatrix );
 			
-			gl.uniform1f( this.uniLocation[ 1 ], 15.0 );
+			gl.uniform1f( this.uniLocation[ 1 ], 25.0 );
 			gl.uniform1i( this.uniLocation[ 2 ], 0 );
-			gl.uniform1i( this.uniLocation[ 3 ], true );
+			gl.uniform1i( this.uniLocation[ 3 ], false );
 			
 			gl.drawElements( gl.POINTS, this.index.length, gl.UNSIGNED_SHORT, 0 );
 		};
@@ -979,35 +996,39 @@ onload = function()
 		var iPreVal = 0.0;
 		
 		
-		for ( var i=0; i<100; i++ )
+		for ( var i=0; i<50; i++ )
 		{
-			for ( var j=0; j<100; j++ )
+			for ( var j=0; j<50; j++ )
 			{
-				var idx = j + (i * 100);
+				var idx = j + (i * 50);
 				
 				
-				this.moveVal[ idx ] = 0.0;
-				if ( this.moveVal[ idx ] <= 0.0 )
+				this.moveVal[ ((50*50)*0) + idx ] = -1.0;
+				this.moveVal[ ((50*50)*1) + idx ] = 1000.0;
+				this.moveVal[ ((50*50)*2) + idx ] = 4000.0;
+				
+				
+				if ( this.moveVal[ ((50*50)*0) + idx ] <= 0.0 )
 				{
-					this.moveVal[ idx ] = (1.0 - ((Math.abs(i-50)+Math.abs(j-50))/100.0 * 2.0) ) * 10000.0;
+					this.moveVal[ ((50*50)*0) + idx ] = (1.0 - ((Math.abs(i-25)+Math.abs(j-25))/100.0 * 2.0) ) * 10000.0;
 				}
 				
-				if ( this.moveVal[ idx ] < 0.0 )
+				if ( this.moveVal[ ((50*50)*0) + idx ] < 0.0 )
 				{
-					this.moveVal[ idx ] = -(1.0 - ((Math.abs(i-50)+Math.abs(j-50))/100.0 * 2.0) ) * 10000.0;
+					this.moveVal[ ((50*50)*0) + idx ] = -(1.0 - ((Math.abs(i-25)+Math.abs(j-25))/100.0 * 2.0) ) * 10000.0;
 				}
 				
-				this.position[ (idx*12)+0 ] = -5.0 + (i * 0.1);
-				this.position[ (idx*12)+1 ] = 5.0 - (j * 0.1);
+				this.position[ (idx*12)+0 ] = -5.0 + (i * 0.2);
+				this.position[ (idx*12)+1 ] = 5.0 - (j * 0.2);
 				this.position[ (idx*12)+2 ] = 0.0;
-				this.position[ (idx*12)+3 ] = -5.0 + ((i+1) * 0.1);
-				this.position[ (idx*12)+4 ] = 5.0 - (j * 0.1);
+				this.position[ (idx*12)+3 ] = -5.0 + ((i+1) * 0.2);
+				this.position[ (idx*12)+4 ] = 5.0 - (j * 0.2);
 				this.position[ (idx*12)+5 ] = 0.0;
-				this.position[ (idx*12)+6 ] = -5.0 + (i * 0.1);
-				this.position[ (idx*12)+7 ] = 5.0 - ((j+1) * 0.1);
+				this.position[ (idx*12)+6 ] = -5.0 + (i * 0.2);
+				this.position[ (idx*12)+7 ] = 5.0 - ((j+1) * 0.2);
 				this.position[ (idx*12)+8 ] = 0.0;
-				this.position[ (idx*12)+9 ] = -5.0 + ((i+1) * 0.1);
-				this.position[ (idx*12)+10 ] = 5.0 - ((j+1) * 0.1);
+				this.position[ (idx*12)+9 ] = -5.0 + ((i+1) * 0.2);
+				this.position[ (idx*12)+10 ] = 5.0 - ((j+1) * 0.2);
 				this.position[ (idx*12)+11 ] = 0.0;
 				
 				this.color[ (idx*16)+0 ] = 1.0;
@@ -1027,14 +1048,14 @@ onload = function()
 				this.color[ (idx*16)+14 ] = 1.0 - iPreVal;
 				this.color[ (idx*16)+15 ] = 1.0;
 				
-				this.textureCoord[ (idx*8)+0 ] = (i / 100);
-				this.textureCoord[ (idx*8)+1 ] = (j / 100);
-				this.textureCoord[ (idx*8)+2 ] = ((i+1) / 100);
-				this.textureCoord[ (idx*8)+3 ] = (j / 100);
-				this.textureCoord[ (idx*8)+4 ] = (i / 100);
-				this.textureCoord[ (idx*8)+5 ] = ((j+1) / 100);
-				this.textureCoord[ (idx*8)+6 ] = ((i+1) / 100);
-				this.textureCoord[ (idx*8)+7 ] = ((j+1) / 100);
+				this.textureCoord[ (idx*8)+0 ] = (i / 50);
+				this.textureCoord[ (idx*8)+1 ] = (j / 50);
+				this.textureCoord[ (idx*8)+2 ] = ((i+1) / 50);
+				this.textureCoord[ (idx*8)+3 ] = (j / 50);
+				this.textureCoord[ (idx*8)+4 ] = (i / 50);
+				this.textureCoord[ (idx*8)+5 ] = ((j+1) / 50);
+				this.textureCoord[ (idx*8)+6 ] = ((i+1) / 50);
+				this.textureCoord[ (idx*8)+7 ] = ((j+1) / 50);
 				
 				this.index[ (idx*6)+0 ] = (idx*4)+0;
 				this.index[ (idx*6)+1 ] = (idx*4)+1;
@@ -1045,6 +1066,81 @@ onload = function()
 			}
 		}
 		
+		for ( var i=0; i<50; i++ )
+		{
+			var x = 25 + Math.floor( Math.random() * 40 ) - 20;
+			var y = 25 + Math.floor( Math.random() * 40 ) - 20;
+			var idx = x + (y*50);
+			var v = 2.0 * 10000.0;
+			
+			this.moveVal[ ((50*50)*1) + (x+0) + ((y+0)*50) ] = v;
+			
+			this.moveVal[ ((50*50)*1) + (x+1) + ((y+0)*50) ] = v - 1000;
+			this.moveVal[ ((50*50)*1) + (x+2) + ((y+0)*50) ] = v - 2000;
+			this.moveVal[ ((50*50)*1) + (x+3) + ((y+0)*50) ] = v - 3000;
+			this.moveVal[ ((50*50)*1) + (x+1) + ((y+1)*50) ] = v - 2000;
+			this.moveVal[ ((50*50)*1) + (x+2) + ((y+1)*50) ] = v - 3000;
+			this.moveVal[ ((50*50)*1) + (x+1) + ((y+2)*50) ] = v - 3000;
+			
+			this.moveVal[ ((50*50)*1) + (x-1) + ((y+0)*50) ] = v - 1000;
+			this.moveVal[ ((50*50)*1) + (x-2) + ((y+0)*50) ] = v - 2000;
+			this.moveVal[ ((50*50)*1) + (x-3) + ((y+0)*50) ] = v - 3000;
+			this.moveVal[ ((50*50)*1) + (x-1) + ((y+1)*50) ] = v - 2000;
+			this.moveVal[ ((50*50)*1) + (x-2) + ((y+1)*50) ] = v - 3000;
+			this.moveVal[ ((50*50)*1) + (x-1) + ((y+2)*50) ] = v - 3000;
+
+			this.moveVal[ ((50*50)*1) + (x+1) + ((y+0)*50) ] = v - 1000;
+			this.moveVal[ ((50*50)*1) + (x+2) + ((y+0)*50) ] = v - 2000;
+			this.moveVal[ ((50*50)*1) + (x+3) + ((y+0)*50) ] = v - 3000;
+			this.moveVal[ ((50*50)*1) + (x+1) + ((y-1)*50) ] = v - 2000;
+			this.moveVal[ ((50*50)*1) + (x+2) + ((y-1)*50) ] = v - 3000;
+			this.moveVal[ ((50*50)*1) + (x+1) + ((y-2)*50) ] = v - 3000;
+			
+			this.moveVal[ ((50*50)*1) + (x-1) + ((y+0)*50) ] = v - 1000;
+			this.moveVal[ ((50*50)*1) + (x-2) + ((y+0)*50) ] = v - 2000;
+			this.moveVal[ ((50*50)*1) + (x-3) + ((y+0)*50) ] = v - 3000;
+			this.moveVal[ ((50*50)*1) + (x-1) + ((y-1)*50) ] = v - 2000;
+			this.moveVal[ ((50*50)*1) + (x-2) + ((y-1)*50) ] = v - 3000;
+			this.moveVal[ ((50*50)*1) + (x-1) + ((y-2)*50) ] = v - 3000;
+		}
+		
+		for ( var i=0; i<50; i++ )
+		{
+			var x = 25 + Math.floor( Math.random() * 30 ) - 15;
+			var y = 25 + Math.floor( Math.random() * 30 ) - 15;
+			var idx = x + (y*50);
+			var v = 0.8 * 10000.0;
+			
+			this.moveVal[ ((50*50)*2) + (x+0) + ((y+0)*50) ] = v;
+			
+			this.moveVal[ ((50*50)*2) + (x+1) + ((y+0)*50) ] = v - 1000;
+			this.moveVal[ ((50*50)*2) + (x+2) + ((y+0)*50) ] = v - 2000;
+			this.moveVal[ ((50*50)*2) + (x+3) + ((y+0)*50) ] = v - 3000;
+			this.moveVal[ ((50*50)*2) + (x+1) + ((y+1)*50) ] = v - 2000;
+			this.moveVal[ ((50*50)*2) + (x+2) + ((y+1)*50) ] = v - 3000;
+			this.moveVal[ ((50*50)*2) + (x+1) + ((y+2)*50) ] = v - 3000;
+			
+			this.moveVal[ ((50*50)*2) + (x-1) + ((y+0)*50) ] = v - 1000;
+			this.moveVal[ ((50*50)*2) + (x-2) + ((y+0)*50) ] = v - 2000;
+			this.moveVal[ ((50*50)*2) + (x-3) + ((y+0)*50) ] = v - 3000;
+			this.moveVal[ ((50*50)*2) + (x-1) + ((y+1)*50) ] = v - 2000;
+			this.moveVal[ ((50*50)*2) + (x-2) + ((y+1)*50) ] = v - 3000;
+			this.moveVal[ ((50*50)*2) + (x-1) + ((y+2)*50) ] = v - 3000;
+
+			this.moveVal[ ((50*50)*2) + (x+1) + ((y+0)*50) ] = v - 1000;
+			this.moveVal[ ((50*50)*2) + (x+2) + ((y+0)*50) ] = v - 2000;
+			this.moveVal[ ((50*50)*2) + (x+3) + ((y+0)*50) ] = v - 3000;
+			this.moveVal[ ((50*50)*2) + (x+1) + ((y-1)*50) ] = v - 2000;
+			this.moveVal[ ((50*50)*2) + (x+2) + ((y-1)*50) ] = v - 3000;
+			this.moveVal[ ((50*50)*2) + (x+1) + ((y-2)*50) ] = v - 3000;
+			
+			this.moveVal[ ((50*50)*2) + (x-1) + ((y+0)*50) ] = v - 1000;
+			this.moveVal[ ((50*50)*2) + (x-2) + ((y+0)*50) ] = v - 2000;
+			this.moveVal[ ((50*50)*2) + (x-3) + ((y+0)*50) ] = v - 3000;
+			this.moveVal[ ((50*50)*2) + (x-1) + ((y-1)*50) ] = v - 2000;
+			this.moveVal[ ((50*50)*2) + (x-2) + ((y-1)*50) ] = v - 3000;
+			this.moveVal[ ((50*50)*2) + (x-1) + ((y-2)*50) ] = v - 3000;
+		}
 		
 		// VBOとIBOの生成
 		this.vPosition     = create_vbo( this.position );
